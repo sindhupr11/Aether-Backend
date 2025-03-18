@@ -1,4 +1,4 @@
-//form.js
+//backend/models/form.js
 module.exports = (sequelize, DataTypes) => {
     const Form = sequelize.define('Form', {
       id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },

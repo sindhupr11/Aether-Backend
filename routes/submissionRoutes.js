@@ -1,3 +1,4 @@
+//backend/routes/submissionRoutes.js
 const express = require('express');
 const { submitResponse } = require('../controllers/submissionController');
 const authMiddleware = require('../middleware/authMiddleware');

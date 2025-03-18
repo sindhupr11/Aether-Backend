@@ -1,4 +1,4 @@
-//field.js
+//backend/models/field.js
 module.exports = (sequelize, DataTypes) => {
     const Field = sequelize.define('Field', {
       id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },

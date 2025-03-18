@@ -1,3 +1,4 @@
+//backend/server.js
 require('dotenv').config();
 const express = require('express');
 const sequelize = require('./config/db');
@@ -5,6 +6,7 @@ const authRoutes = require('./routes/authRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const formRoutes = require('./routes/formRoutes');
 const submissionRoutes = require('./routes/submissionRoutes');
+const fieldRoutes = require('./routes/fieldRoutes');
 const db = require('./models');
 const jwt = require('jsonwebtoken');
 
@@ -19,6 +21,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/forms', formRoutes);
 app.use('/api/submissions', submissionRoutes);
+app.use('/api/fields', fieldRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
