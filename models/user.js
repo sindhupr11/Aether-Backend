@@ -8,6 +8,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING, 
         allowNull: false,
         defaultValue: 'changeme'
+      },
+      resetToken: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      resetTokenExpiry: {
+        type: DataTypes.DATE,
+        allowNull: true
       }
     });
     return User;
