@@ -1,17 +1,13 @@
-const db = require('./models');
+const sequelize = require('./config/database');
+const User = require('./models/User');
 
-async function testConnection() {
+async function testUsers() {
   try {
-    await db.sequelize.authenticate();
-    console.log('Connected to Neon DB successfully!');
-
-    const users = await db.User.findAll();
+    const users = await User.findAll();
     console.log('Users:', users);
   } catch (error) {
-    console.error('Unable to connect to the database:', error);
-  } finally {
-    await db.sequelize.close();
+    console.error('Error:', error);
   }
 }
 
-testConnection();
+testUsers();

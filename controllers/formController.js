@@ -1,30 +1,67 @@
 //backend/controllers/formController.js
-const db = require('../models');
+const { Form } = require('../models');
 
 exports.createForm = async (req, res) => {
   try {
-    const { name, description, project_id, fields } = req.body;
-
-    const form = await db.Form.create({ name, description, project_id });
-
-    if (fields && fields.length > 0) {
-      const fieldRecords = fields.map(field => ({ ...field, form_id: form.id }));
-      await db.Field.bulkCreate(fieldRecords);
-    }
-
+    const { name, projectName } = req.body;
+    const form = await Form.create({
+      name,
+      projectName,
+      userId: req.user.id
+    });
     res.status(201).json(form);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-exports.getFormsByProject = async (req, res) => {
+exports.getForms = async (req, res) => {
   try {
-    const { project_id } = req.params;
-
-    const forms = await db.Form.findAll({ where: { project_id }, include: db.Field });
-
+    const { projectName } = req.query;
+    const forms = await Form.findAll({
+      where: {
+        userId: req.user.id,
+        projectName
+      }
+    });
     res.json(forms);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.updateForm = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { sections } = req.body;
+    const form = await Form.findOne({
+      where: { id, userId: req.user.id }
+    });
+    
+    if (!form) {
+      return res.status(404).json({ error: 'Form not found' });
+    }
+    
+    form.sections = sections;
+    await form.save();
+    res.json(form);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.deleteForm = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await Form.destroy({
+      where: { id, userId: req.user.id }
+    });
+    
+    if (!deleted) {
+      return res.status(404).json({ error: 'Form not found' });
+    }
+    
+    res.json({ message: 'Form deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
