@@ -1,8 +1,8 @@
 //backend/models/form.js
 const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+const sequelize = require('../config/db');
 
-module.exports = (sequelize, Sequelize) => {
+module.exports = (sequelize) => {
   class Form extends Model {}
   
   Form.init({

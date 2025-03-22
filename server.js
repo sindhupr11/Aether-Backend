@@ -8,6 +8,7 @@ const projectRoutes = require('./routes/projectRoutes');
 const formRoutes = require('./routes/formRoutes');
 const submissionRoutes = require('./routes/submissionRoutes');
 const authMiddleware = require('./middleware/auth');
+const fieldRoutes = require('./routes/fieldRoutes');
 const db = require('./models');
 
 db.sequelize.sync({ alter: true }) // Change to { force: true } if you want to reset DB
@@ -31,6 +32,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', authMiddleware, projectRoutes);
 app.use('/api/forms', authMiddleware, formRoutes);
 app.use('/api/submissions', authMiddleware, submissionRoutes);
+app.use('/api/fields', authMiddleware, fieldRoutes);
 
 app.use('/auth', authRoutes);
 

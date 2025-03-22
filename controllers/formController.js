@@ -1,5 +1,5 @@
 //backend/controllers/formController.js
-const { Form } = require('../models');
+const { Form, Project } = require('../models');
 
 exports.createForm = async (req, res) => {
   try {
@@ -9,9 +9,15 @@ exports.createForm = async (req, res) => {
       return res.status(400).json({ error: 'projectId is required' });
     }
 
+    // Fetch the project to get its name
+    const project = await Project.findByPk(projectId);
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
     const form = await Form.create({
       name,
-      projectName,
+      projectName: project.name, // Use the project name from the database
       sections,
       userId: req.user.id,
       project_id: projectId
