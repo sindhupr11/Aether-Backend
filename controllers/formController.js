@@ -127,24 +127,53 @@ exports.getFormById = async (req, res) => {
   }
 };
 
-// exports.updateForm = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-    
-//     const form = await Form.findOne({
-//       where: { id, userId: req.user.id }
-//     });
+exports.updateForm = async (req, res) => {
+  try {
+      const { id } = req.params;
+      const { fields } = req.body; // Expecting an array of fields
 
-//     if (!form) {
-//       return res.status(404).json({ error: 'Form not found' });
-//     }
+      // Find the form to ensure it exists
+      const form = await Form.findOne({
+          where: { id, userId: req.user.id }
+      });
 
-//     await form.save();
-//     res.json(form);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
+      if (!form) {
+          return res.status(404).json({ error: 'Form not found' });
+      }
+
+      if (!Array.isArray(fields) || fields.length === 0) {
+          return res.status(400).json({ error: 'Fields array is required' });
+      }
+
+      // Find the last field order to append fields in sequence
+      const lastField = await Field.findOne({
+          where: { form_id: id },
+          order: [['order', 'DESC']]
+      });
+      let order = lastField ? lastField.order + 1 : 1;
+
+      const newFields = fields.map(field => ({
+          label: field.label,
+          type: field.type,
+          required: field.required || false,
+          form_id: id,
+          is_primary_key: field.is_primary_key || false,
+          order: order++
+      }));
+
+      // Bulk insert fields into the database
+      const addedFields = await Field.bulkCreate(newFields);
+
+      res.status(200).json({
+          message: "Fields added successfully",
+          fields: addedFields
+      });
+  } catch (error) {
+      console.error('Update form error:', error);
+      res.status(500).json({ error: error.message });
+  }
+};
+
 
 // exports.deleteForm = async (req, res) => {
 //   try {

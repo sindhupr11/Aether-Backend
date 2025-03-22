@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/', authMiddleware, createForm);
 router.get('/:projectId', authMiddleware, getForms);
-// router.put('/forms/:id', authMiddleware, updateForm);
+router.put('/:id', authMiddleware, updateForm);
 // router.delete('/forms/:id', authMiddleware, deleteForm);
 router.get('/:id/schema', authMiddleware, getFormSchema);
 router.get('/:id', authMiddleware, getFormById);
