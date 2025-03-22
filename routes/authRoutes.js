@@ -5,90 +5,13 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const nodemailer = require('nodemailer');
+const authController = require('../controllers/authController');
 
 // Register
-router.post('/register', async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-
-    // Check if user already exists
-    let user = await User.findOne({ where: { email } });
-    if (user) {
-      return res.status(400).json({ error: 'User already exists' });
-    }
-
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Create user
-    user = await User.create({
-      name,
-      email,
-      password: hashedPassword
-    });
-
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
+router.post('/register', authController.register);
 
 // Login
-router.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    console.log('Login attempt for:', email); // Debug log
-
-    // Check for user
-    const user = await User.findOne({ where: { email } });
-    if (!user) {
-      console.log('User not found'); // Debug log
-      return res.status(400).json({ error: 'Invalid credentials' });
-    }
-
-    // Validate password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      console.log('Password mismatch'); // Debug log
-      return res.status(400).json({ error: 'Invalid credentials' });
-    }
-
-    // Create JWT token
-    const payload = {
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name
-      }
-    };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' },
-      (err, token) => {
-        if (err) {
-          console.error('Token creation error:', err); // Debug log
-          throw err;
-        }
-        console.log('Login successful, sending token'); // Debug log
-        res.json({
-          token,
-          user: {
-            id: user.id,
-            name: user.name,
-            email: user.email
-          }
-        });
-      }
-    );
-  } catch (err) {
-    console.error('Server error:', err); // Debug log
-    res.status(500).json({ error: 'Server error' });
-  }
-});
+router.post('/login', authController.login);
 
 // Forgot Password
 router.post('/forgot-password', async (req, res) => {

@@ -32,6 +32,15 @@ app.use('/api/projects', authMiddleware, projectRoutes);
 app.use('/api/forms', authMiddleware, formRoutes);
 app.use('/api/submissions', authMiddleware, submissionRoutes);
 
+app.use('/auth', authRoutes);
+
+// Add this near your other routes to test if the server is responding
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Server is running!' });
+});
+
+app.use('/api', formRoutes);
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
   await sequelize.sync();
