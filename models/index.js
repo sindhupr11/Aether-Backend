@@ -38,7 +38,17 @@ db.Form.belongsTo(db.Project, { foreignKey: 'project_id' });
 db.Form.hasMany(db.Field, { foreignKey: 'form_id' });
 db.Field.belongsTo(db.Form, { foreignKey: 'form_id' });
 
-db.Form.hasMany(db.Submission, { foreignKey: 'form_id' });
-db.Submission.belongsTo(db.Form, { foreignKey: 'form_id' });
+db.Form.hasMany(db.Submission, { 
+    foreignKey: { 
+        name: 'form_id',
+        allowNull: false  // This is the default - keep this if you want to require a form_id
+    }
+});
+db.Submission.belongsTo(db.Form, { 
+    foreignKey: { 
+        name: 'form_id',
+        allowNull: false  // This is the default - keep this if you want to require a form_id
+    }
+});
 
 module.exports = db;
