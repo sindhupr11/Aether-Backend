@@ -19,10 +19,6 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: true
     },
-    sections: {
-      type: DataTypes.JSONB,
-      defaultValue: []
-    },
     userId: {
       type: DataTypes.UUID,
       allowNull: true

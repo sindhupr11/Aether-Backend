@@ -1,9 +1,9 @@
 //backend/controllers/formController.js
-const { Form, Project } = require('../models');
+const { Form, Project, Field } = require('../models');
 
 exports.createForm = async (req, res) => {
   try {
-    const { name, projectName, sections, projectId } = req.body;
+    const { name, projectName, projectId } = req.body;
     
     if (!projectId) {
       return res.status(400).json({ error: 'projectId is required' });
@@ -18,7 +18,6 @@ exports.createForm = async (req, res) => {
     const form = await Form.create({
       name,
       projectName: project.name, // Use the project name from the database
-      sections,
       userId: req.user.id,
       project_id: projectId
     });
@@ -44,58 +43,80 @@ exports.getForms = async (req, res) => {
   }
 };
 
-exports.updateForm = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { sections } = req.body;
-    
-    const form = await Form.findOne({
-      where: { id, userId: req.user.id }
-    });
-
-    if (!form) {
-      return res.status(404).json({ error: 'Form not found' });
-    }
-
-    form.sections = sections;
-    await form.save();
-    res.json(form);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.deleteForm = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const result = await Form.destroy({
-      where: { id, userId: req.user.id }
-    });
-    
-    if (!result) {
-      return res.status(404).json({ error: 'Form not found' });
-    }
-    
-    res.json({ message: 'Form deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
 exports.getFormSchema = async (req, res) => {
   try {
     const { id } = req.params;
+    
     const form = await Form.findOne({
       where: { id, userId: req.user.id },
-      attributes: ['sections'] // Only fetch the sections field
+      include: [{
+        model: Field,
+        attributes: ['id', 'label', 'type', 'required']
+      }]
     });
 
     if (!form) {
       return res.status(404).json({ error: 'Form not found' });
     }
 
-    res.json({ schema: form.sections });
+    const schema = {
+      type: 'object',
+      properties: {},
+      required: []
+    };
+
+    form.Fields.forEach(field => {
+      schema.properties[field.label] = {
+        type: field.type,
+        fieldId: field.id
+      };
+      
+      if (field.required) {
+        schema.required.push(field.label);
+      }
+    });
+    
+    res.json(schema);
   } catch (error) {
+    console.error('Get form schema error:', error);
     res.status(500).json({ error: error.message });
   }
 };
+
+// exports.updateForm = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+    
+//     const form = await Form.findOne({
+//       where: { id, userId: req.user.id }
+//     });
+
+//     if (!form) {
+//       return res.status(404).json({ error: 'Form not found' });
+//     }
+
+//     await form.save();
+//     res.json(form);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
+// exports.deleteForm = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const result = await Form.destroy({
+//       where: { id, userId: req.user.id }
+//     });
+    
+//     if (!result) {
+//       return res.status(404).json({ error: 'Form not found' });
+//     }
+    
+//     res.json({ message: 'Form deleted successfully' });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
+
