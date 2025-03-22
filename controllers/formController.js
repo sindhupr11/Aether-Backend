@@ -174,6 +174,28 @@ exports.updateForm = async (req, res) => {
   }
 };
 
+exports.getFormPrimaryKey = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the form's primary key field
+    const primaryKeyField = await Field.findOne({
+      where: { 
+        form_id: id,
+        is_primary_key: true
+      }
+    });
+
+    if (!primaryKeyField) {
+      return res.status(404).json({ error: 'No primary key field found for this form' });
+    }
+
+    res.json(primaryKeyField.label);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 // exports.deleteForm = async (req, res) => {
 //   try {
