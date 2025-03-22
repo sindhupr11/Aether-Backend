@@ -1,3 +1,4 @@
+//backend/routes/projectRoutes.js
 const express = require('express');
 const { createProject, getUserProjects } = require('../controllers/projectController');
 const authMiddleware = require('../middleware/authMiddleware');

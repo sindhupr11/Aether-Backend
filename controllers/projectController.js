@@ -1,3 +1,4 @@
+//backend/controllers/projectController.js
 const db = require('../models');
 
 exports.createProject = async (req, res) => {

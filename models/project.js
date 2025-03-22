@@ -1,4 +1,4 @@
-//project.js
+//backend/models/project.js
 module.exports = (sequelize, DataTypes) => {
     const Project = sequelize.define('Project', {
       id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },

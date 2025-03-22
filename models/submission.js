@@ -1,4 +1,4 @@
-//submission.js
+//backend/models/submission.js
 module.exports = (sequelize, DataTypes) => {
     const Submission = sequelize.define('Submission', {
       id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
