@@ -1,4 +1,3 @@
-//backend/models/index.js
 const Sequelize = require('sequelize');
 require('dotenv').config();
 
@@ -23,8 +22,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-const UserModel = require('./user');
-db.User = UserModel(sequelize, Sequelize);
+db.User = require('./user')(sequelize, Sequelize);
 db.Project = require('./project')(sequelize, Sequelize);
 db.Form = require('./form')(sequelize, Sequelize);
 db.Field = require('./field')(sequelize, Sequelize);

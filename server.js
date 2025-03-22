@@ -9,12 +9,7 @@ const formRoutes = require('./routes/formRoutes');
 const submissionRoutes = require('./routes/submissionRoutes');
 const authMiddleware = require('./middleware/authMiddleware');
 const fieldRoutes = require('./routes/fieldRoutes');
-const { sequelize } = require('./models');
-
-
-db.sequelize.sync({ alter: true })
-  .then(() => console.log("Database connected and synced with Neon!"))
-  .catch(err => console.error("Database connection error:", err));
+const db = require('./models');
 
 const app = express();
 
@@ -25,22 +20,22 @@ app.use(cors({
 
 app.use(express.json());
 
-// Public routes
-app.use('/api/auth', authRoutes);
 
-// Protected routes
+app.use('/api/auth', authRoutes);
 app.use('/api/projects', authMiddleware, projectRoutes);
 app.use('/api/forms', authMiddleware, formRoutes);
 app.use('/api/submissions', authMiddleware, submissionRoutes);
 app.use('/api/fields', authMiddleware, fieldRoutes);
 
-// Add this near your other routes to test if the server is responding
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'Server is running!' });
-});
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, async () => {
-  await sequelize.sync();
-  console.log(`Server running on port ${PORT}`);
-});
+
+db.sequelize.sync({ alter: true }) // Change to { force: true } if you want to reset DB
+  .then(() => console.log("Database connected and synced with Neon!"))
+  .catch(err => console.error("Database connection error:", err));
+
+  app.listen(PORT, async () => {
+    await sequelize.sync();
+    console.log(`Server running on port ${PORT}`);
+  });
+

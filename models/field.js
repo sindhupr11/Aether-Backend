@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
       form_id: { type: DataTypes.UUID, allowNull: false },
       primary_key: { type: DataTypes.BOOLEAN, defaultValue: false }, // Only one field can be primary key
       order: { type: DataTypes.INTEGER, allowNull: false }, // Order of appearance in form
+      is_primary_key: {
+          type: DataTypes.BOOLEAN,
+          defaultValue: false
+      },
   });
 
   return Field;
