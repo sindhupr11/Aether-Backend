@@ -29,11 +29,11 @@ exports.createForm = async (req, res) => {
 
 exports.getForms = async (req, res) => {
   try {
-    const { projectName } = req.query;
+    const { projectId } = req.params;
     const forms = await Form.findAll({
       where: {
         userId: req.user.id,
-        ...(projectName && { projectName })
+        ...(projectId && { project_id: projectId })
       }
     });
     res.json(forms);

@@ -16,6 +16,14 @@ module.exports = (sequelize, DataTypes) => {
     project_id: {
       type: DataTypes.UUID,
       allowNull: false
+    },
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'id'
+      }
     }
   }, {
     sequelize,

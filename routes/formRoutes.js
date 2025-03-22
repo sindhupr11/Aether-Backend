@@ -6,7 +6,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
 router.post('/', authMiddleware, createForm);
-router.get('/', authMiddleware, getForms);
+router.get('/:projectId', authMiddleware, getForms);
 // router.put('/forms/:id', authMiddleware, updateForm);
 // router.delete('/forms/:id', authMiddleware, deleteForm);
 router.get('/:id/schema', authMiddleware, getFormSchema);
