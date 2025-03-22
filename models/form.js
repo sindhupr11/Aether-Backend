@@ -1,34 +1,41 @@
 //backend/models/form.js
-const { DataTypes } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Form = sequelize.define('Form', {
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  projectName: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  sections: {
-    type: DataTypes.JSONB,
-    defaultValue: []
-  },
-  userId: {
-    type: DataTypes.UUID,
-    allowNull: false
-  },
-  createdAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  }
-});
+module.exports = (sequelize, Sequelize) => {
+  class Form extends Model {}
+  
+  Form.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    projectName: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    sections: {
+      type: DataTypes.JSONB,
+      defaultValue: []
+    },
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: true
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    }
+  }, {
+    sequelize,
+    modelName: 'Form'
+  });
 
-module.exports = Form;
+  return Form;
+};
   

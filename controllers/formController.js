@@ -3,12 +3,18 @@ const { Form } = require('../models');
 
 exports.createForm = async (req, res) => {
   try {
-    const { name, projectName, sections } = req.body;
+    const { name, projectName, sections, projectId } = req.body;
+    
+    if (!projectId) {
+      return res.status(400).json({ error: 'projectId is required' });
+    }
+
     const form = await Form.create({
       name,
       projectName,
       sections,
-      userId: req.user.id
+      userId: req.user.id,
+      project_id: projectId
     });
     res.status(201).json(form);
   } catch (error) {
@@ -65,6 +71,24 @@ exports.deleteForm = async (req, res) => {
     }
     
     res.json({ message: 'Form deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getFormSchema = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const form = await Form.findOne({
+      where: { id, userId: req.user.id },
+      attributes: ['sections'] // Only fetch the sections field
+    });
+
+    if (!form) {
+      return res.status(404).json({ error: 'Form not found' });
+    }
+
+    res.json({ schema: form.sections });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

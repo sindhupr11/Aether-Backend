@@ -23,7 +23,8 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.User = require('./user')(sequelize, Sequelize);
+const UserModel = require('./user');
+db.User = UserModel(sequelize, Sequelize);
 db.Project = require('./project')(sequelize, Sequelize);
 db.Form = require('./form')(sequelize, Sequelize);
 db.Field = require('./field')(sequelize, Sequelize);
