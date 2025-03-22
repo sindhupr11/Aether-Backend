@@ -30,7 +30,7 @@ app.use('/api/fields', authMiddleware, fieldRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-db.sequelize.sync({ alter: true }) // Change to { force: true } if you want to reset DB
+db.sequelize.sync({ alter: true }) 
   .then(() => console.log("Database connected and synced with Neon!"))
   .catch(err => console.error("Database connection error:", err));
 
