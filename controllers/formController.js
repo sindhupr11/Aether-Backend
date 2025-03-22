@@ -9,7 +9,6 @@ exports.createForm = async (req, res) => {
       return res.status(400).json({ error: 'projectId is required' });
     }
 
-    // Fetch the project to get its name
     const project = await Project.findByPk(projectId);
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
@@ -17,7 +16,7 @@ exports.createForm = async (req, res) => {
 
     const form = await Form.create({
       name,
-      projectName: project.name, // Use the project name from the database
+      projectName: project.name, 
       userId: req.user.id,
       project_id: projectId
     });

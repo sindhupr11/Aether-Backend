@@ -3,8 +3,6 @@ const express = require("express");
 const router = express.Router();
 const fieldController = require("../controllers/fieldController");
 
-// Add this before your routes
-router.use(express.json());
 
 router.post("/", fieldController.addField);
 router.get("/:form_id", fieldController.getFieldsByForm);

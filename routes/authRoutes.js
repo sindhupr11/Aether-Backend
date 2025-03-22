@@ -6,6 +6,8 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const nodemailer = require('nodemailer');
 const authController = require('../controllers/authController');
+const { Op } = require('sequelize');
+
 
 // Register
 router.post('/register', authController.register);

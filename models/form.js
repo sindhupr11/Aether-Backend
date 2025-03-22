@@ -1,8 +1,4 @@
-//backend/models/form.js
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
-
-module.exports = (sequelize) => {
+module.exports = (sequelize, DataTypes) => {
   class Form extends Model {}
   
   Form.init({
@@ -15,17 +11,9 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    projectName: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    userId: {
+    project_id: {
       type: DataTypes.UUID,
-      allowNull: true
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
+      allowNull: false
     }
   }, {
     sequelize,
@@ -34,4 +22,3 @@ module.exports = (sequelize) => {
 
   return Form;
 };
-  

@@ -10,7 +10,6 @@ const addField = async (req, res) => {
             return res.status(404).json({ error: "Form not found" });
         }
 
-       
         const newField = new db.Field({
             label,
             type,
