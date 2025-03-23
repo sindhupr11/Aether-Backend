@@ -1,6 +1,6 @@
 //backend/routes/submissionRoutes.js
 const express = require('express');
-const { submitResponse, getFormSubmissions, getFieldSubmissions, getSubmissionIdentifiers, getSubmissionByPrimaryKey, getSubmissionById} = require('../controllers/submissionController');
+const { submitResponse, getFormSubmissions, getFieldSubmissions, getSubmissionIdentifiers, getSubmissionByPrimaryKey, getSubmissionById, getPendingSubmissions} = require('../controllers/submissionController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();

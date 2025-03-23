@@ -67,10 +67,9 @@ exports.getPendingSubmissions = async (req, res) => {
   }
 };
 
-
 exports.getFormSubmissions = async (req, res) => {
   try {
-    const { formId } = req.params;
+    const { formId, format } = req.params;
 
     // Check if form exists
     const form = await db.Form.findByPk(formId);
@@ -84,10 +83,78 @@ exports.getFormSubmissions = async (req, res) => {
       order: [['createdAt', 'DESC']]
     });
 
-    res.json(submissions);
+    // Handle different formats
+    switch (format?.toLowerCase()) {
+      case 'csv':
+        const csv = await convertToCSV(submissions);
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', `attachment; filename=form_${formId}_submissions.csv`);
+        return res.send(csv);
+
+      case 'pdf':
+        const pdf = await generatePDF(submissions);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=form_${formId}_submissions.pdf`);
+        return res.send(pdf);
+
+      default:
+        // If no format specified, return JSON as before
+        return res.json(submissions);
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+};
+
+// Helper function to convert submissions to CSV
+const convertToCSV = async (submissions) => {
+  if (submissions.length === 0) return '';
+  
+  // Get headers from the first submission's data
+  const headers = Object.keys(submissions[0].data);
+  const csvHeader = headers.join(',') + '\n';
+  
+  // Convert each submission to CSV row
+  const csvRows = submissions.map(submission => {
+    return headers.map(header => {
+      const value = submission.data[header];
+      // Handle special characters and commas in the value
+      return `"${String(value).replace(/"/g, '""')}"`;
+    }).join(',');
+  }).join('\n');
+
+  return csvHeader + csvRows;
+};
+
+// Helper function to generate PDF
+const generatePDF = async (submissions) => {
+  // You'll need to install and import a PDF library like PDFKit
+  // This is a placeholder for the actual implementation
+  const PDFDocument = require('pdfkit');
+  const doc = new PDFDocument();
+  
+  // Create a buffer to store the PDF
+  return new Promise((resolve, reject) => {
+    try {
+      const chunks = [];
+      doc.on('data', chunk => chunks.push(chunk));
+      doc.on('end', () => resolve(Buffer.concat(chunks)));
+      
+      // Add content to PDF
+      doc.text('Form Submissions');
+      doc.moveDown();
+      
+      submissions.forEach((submission, index) => {
+        doc.text(`Submission ${index + 1}:`);
+        doc.text(JSON.stringify(submission.data, null, 2));
+        doc.moveDown();
+      });
+      
+      doc.end();
+    } catch (error) {
+      reject(error);
+    }
+  });
 };
 
 exports.getFieldSubmissions = async (req, res) => {

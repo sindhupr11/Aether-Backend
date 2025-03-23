@@ -11,7 +11,7 @@ const submissionRoutes = require('./routes/submissionRoutes');
 const authMiddleware = require('./middleware/authMiddleware');
 const fieldRoutes = require('./routes/fieldRoutes');
 const db = require('./models');
-
+const llmRoutes = require('./routes/llmRoutes');
 const app = express();
 
 app.use(cors({
@@ -30,6 +30,7 @@ app.use('/api/projects', authMiddleware, projectRoutes);
 app.use('/api/forms', authMiddleware, formRoutes);
 app.use('/api/submissions', authMiddleware, submissionRoutes);
 app.use('/api/fields', authMiddleware, fieldRoutes);
+app.use('/api/llm', llmRoutes);
 
 
 const PORT = process.env.PORT || 5000;
