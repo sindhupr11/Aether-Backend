@@ -183,24 +183,24 @@ function generatePDF(submissions) {
   });
 }
 
+//all submission of a field
 exports.getFieldSubmissions = async (req, res) => {
   try {
-    const { formId } = req.params;
-    const { fieldName } = req.body;
+    const { formName, fieldName } = req.body;
 
     if (!fieldName) {
       return res.status(400).json({ error: 'Field name is required' });
     }
 
     // Check if form exists
-    const form = await db.Form.findByPk(formId);
+    const form = await db.Form.findOne({ where: { name: formName } });
     if (!form) {
       return res.status(404).json({ error: 'Form not found' });
     }
 
     // Get all submissions for this form
     const submissions = await db.Submission.findAll({
-      where: { form_id: formId },
+      where: { form_id: form.id },
       order: [['createdAt', 'DESC']]
     });
 
@@ -220,6 +220,7 @@ exports.getFieldSubmissions = async (req, res) => {
   }
 };
 
+//id + pk
 exports.getSubmissionIdentifiers = async (req, res) => {
   try {
     const { formId } = req.params;
@@ -260,6 +261,7 @@ exports.getSubmissionIdentifiers = async (req, res) => {
   }
 };
 
+//one entry
 exports.getSubmissionByPrimaryKey = async (req, res) => {
   try {
     const { formId } = req.params;
