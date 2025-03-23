@@ -2,6 +2,7 @@
 const db = require('../models');
 const offlineSubmissionService = require('../services/offlineSubmissionService');
 const jwt = require('jsonwebtoken');
+const PDFDocument = require('pdfkit');
 
 exports.submitResponse = async (req, res) => {
   try {
@@ -128,35 +129,59 @@ const convertToCSV = async (submissions) => {
 };
 
 // Helper function to generate PDF
-const generatePDF = async (submissions) => {
-  // You'll need to install and import a PDF library like PDFKit
-  // This is a placeholder for the actual implementation
-  const PDFDocument = require('pdfkit');
-  const doc = new PDFDocument();
-  
-  // Create a buffer to store the PDF
+function generatePDF(submissions) {
   return new Promise((resolve, reject) => {
     try {
+      const doc = new PDFDocument();
       const chunks = [];
+
       doc.on('data', chunk => chunks.push(chunk));
       doc.on('end', () => resolve(Buffer.concat(chunks)));
-      
-      // Add content to PDF
-      doc.text('Form Submissions');
-      doc.moveDown();
-      
+
+      // Title
+      doc.fontSize(20).text('Submissions Report', { align: 'center' });
+      doc.moveDown(2);
+
+      // Add content to the PDF
       submissions.forEach((submission, index) => {
-        doc.text(`Submission ${index + 1}:`);
-        doc.text(JSON.stringify(submission.data, null, 2));
+        // Submission header with timestamp
+        doc.fontSize(14)
+          .fillColor('#2563eb')
+          .text(`Submission ${index + 1}`, { underline: true });
+        
+        doc.fontSize(10)
+          .fillColor('#666666')
+          .text(`Submitted on: ${new Date(submission.createdAt).toLocaleString()}`);
+        
+        doc.moveDown(0.5);
+
+        // Submission data
+        doc.fontSize(12).fillColor('#000000');
+        Object.entries(submission.data).forEach(([key, value]) => {
+          doc.text(`${key}: ${value}`, {
+            indent: 20,
+            continued: false
+          });
+        });
+
+        // Add separator between submissions
+        doc.moveDown();
+        if (index < submissions.length - 1) {
+          doc.strokeColor('#cccccc')
+             .moveTo(50, doc.y)
+             .lineTo(550, doc.y)
+             .stroke();
+        }
         doc.moveDown();
       });
-      
+
+      // Finalize PDF file
       doc.end();
     } catch (error) {
       reject(error);
     }
   });
-};
+}
 
 exports.getFieldSubmissions = async (req, res) => {
   try {
