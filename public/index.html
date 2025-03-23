@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline Form Submission Demo</title>
+</head>
+<body>
+    <h1>Form Submission</h1>
+    <div id="status"></div>
+    <form id="submissionForm">
+        <input type="text" name="form_id" placeholder="Form ID" required>
+        <textarea name="data" placeholder="Form Data (JSON)" required></textarea>
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>Stored Submissions</h2>
+    <div id="storedSubmissions"></div>
+
+    <script src="/js/offlineStorage.js"></script>
+    <script>
+        const form = document.getElementById('submissionForm');
+        const status = document.getElementById('status');
+        const storedSubmissions = document.getElementById('storedSubmissions');
+
+        // Update status display
+        function updateStatus() {
+            status.textContent = navigator.onLine ? 'Online' : 'Offline';
+        }
+
+        // Update stored submissions display
+        function updateStoredSubmissions() {
+            const submissions = offlineStorage.getStoredSubmissions();
+            storedSubmissions.innerHTML = '<pre>' + JSON.stringify(submissions, null, 2) + '</pre>';
+        }
+
+        // Listen for online/offline events
+        window.addEventListener('online', () => {
+            updateStatus();
+            offlineStorage.syncOfflineData();
+        });
+        window.addEventListener('offline', updateStatus);
+
+        // Initial status update
+        updateStatus();
+        updateStoredSubmissions();
+
+        // Handle form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                form_id: form.form_id.value,
+                data: JSON.parse(form.data.value),
+                token: localStorage.getItem('jwt_token') // Get token from storage
+            };
+
+            if (!navigator.onLine) {
+                // Store offline
+                await offlineStorage.saveOfflineSubmission(formData);
+                alert('Stored offline. Will sync when online.');
+            } else {
+                // Submit online
+                try {
+                    const response = await fetch('/api/submissions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': formData.token
+                        },
+                        body: JSON.stringify({
+                            form_id: formData.form_id,
+                            data: formData.data
+                        })
+                    });
+
+                    if (response.ok) {
+                        alert('Submitted successfully');
+                    } else {
+                        throw new Error('Submission failed');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error submitting form');
+                }
+            }
+
+            updateStoredSubmissions();
+        });
+    </script>
+</body>
+</html> 

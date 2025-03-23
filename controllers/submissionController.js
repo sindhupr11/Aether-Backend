@@ -1,9 +1,12 @@
 //backend/controllers/submissionController.js
 const db = require('../models');
+const offlineSubmissionService = require('../services/offlineSubmissionService');
+const jwt = require('jsonwebtoken');
 
 exports.submitResponse = async (req, res) => {
   try {
     const { form_id, data } = req.body;
+    const user_id = req.user.id; // From auth middleware
 
     // First check if the form exists
     const form = await db.Form.findByPk(form_id);
@@ -13,11 +16,57 @@ exports.submitResponse = async (req, res) => {
 
     const submission = await db.Submission.create({ form_id, data });
 
+    await offlineSubmissionService.syncPendingSubmissions();
+
     res.status(201).json(submission);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
+// New method for offline submissions
+exports.submitOfflineResponse = async (req, res) => {
+  try {
+    const { form_id, data, token } = req.body;
+    
+    let user_id;
+    try {
+      // Try to decode the token locally without verification
+      const decoded = jwt.decode(token.replace('Bearer ', ''));
+      user_id = decoded.id;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return res.status(401).json({ error: 'Invalid token format' });
+    }
+
+    // Save submission offline
+    const offlineSubmission = await offlineSubmissionService.saveOfflineSubmission(
+      form_id,
+      user_id,
+      data
+    );
+
+    return res.status(200).json({
+      message: 'Submission saved offline',
+      submission: offlineSubmission
+    });
+  } catch (error) {
+    console.error('Error submitting offline response:', error);
+    res.status(500).json({ error: 'Failed to submit offline response' });
+  }
+};
+
+exports.getPendingSubmissions = async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    const pendingSubmissions = await offlineSubmissionService.getPendingSubmissions(user_id);
+    res.status(200).json(pendingSubmissions);
+  } catch (error) {
+    console.error('Error getting pending submissions:', error);
+    res.status(500).json({ error: 'Failed to get pending submissions' });
+  }
+};
+
 
 exports.getFormSubmissions = async (req, res) => {
   try {

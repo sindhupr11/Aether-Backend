@@ -27,6 +27,7 @@ db.Project = require('./project')(sequelize, Sequelize);
 db.Form = require('./form')(sequelize, Sequelize);
 db.Field = require('./field')(sequelize, Sequelize);
 db.Submission = require('./submission')(sequelize, Sequelize);
+db.OfflineSubmission = require('./OfflineSubmission')(sequelize, Sequelize);
 
 // Associations
 db.User.hasMany(db.Project, { foreignKey: 'user_id' });
