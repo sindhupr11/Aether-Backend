@@ -69,7 +69,8 @@ exports.getPendingSubmissions = async (req, res) => {
 
 exports.getFormSubmissions = async (req, res) => {
   try {
-    const { formId, format } = req.params;
+    const { formId } = req.params;
+    const { format } = req.body;
 
     // Check if form exists
     const form = await db.Form.findByPk(formId);

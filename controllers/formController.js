@@ -158,7 +158,8 @@ exports.updateForm = async (req, res) => {
           required: field.required || false,
           form_id: id,
           is_primary_key: field.is_primary_key || false,
-          order: order++
+          order: order++,
+          form_name: field.type === 'form reference' ? field.form_name : null  // Add form_name for form reference fields
       }));
 
       // Bulk insert fields into the database

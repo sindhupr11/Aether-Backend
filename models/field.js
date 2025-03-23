@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
           type: DataTypes.BOOLEAN,
           defaultValue: false
       },
+      form_name: {
+        type: DataTypes.STRING,
+        allowNull: true  // Allow null for non-form-reference fields
+      },
   });
 
   return Field;
