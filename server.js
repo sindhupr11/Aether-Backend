@@ -15,14 +15,13 @@ const llmRoutes = require('./routes/llmRoutes');
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
+  origin: '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
-
-// Serve static files from the public directory
-app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/api/auth', authRoutes);

@@ -11,6 +11,5 @@ router.post('/field', authMiddleware, getFieldSubmissions);
 router.get('/:formId/identifiers', authMiddleware, getSubmissionIdentifiers);
 router.get('/:formId/pkvalue', authMiddleware, getSubmissionByPrimaryKey);
 router.get('/get/:submissionId', authMiddleware, getSubmissionById);
-router.get('/pending', authMiddleware, getPendingSubmissions);
 
 module.exports = router;
